@@ -1,6 +1,7 @@
 # Bazel Cpp Template
 
 [![myapp CI](https://github.com/TendTo/bazel-cpp-template/actions/workflows/myapp.yml/badge.svg)](https://github.com/TendTo/bazel-cpp-template/actions/workflows/myapp.yml)
+[![Docs CI](https://github.com/TendTo/bazel-cpp-template/actions/workflows/docs.yml/badge.svg)](https://github.com/TendTo/bazel-cpp-template/actions/workflows/docs.yml)
 
 Simple modern template for a C++ project using Bazel with modules.
 
@@ -10,6 +11,8 @@ The folder structure is as follows:
 
 ```bash
 .
+├── docs                    # Documentation
+│   └── BUILD.bazel         # Documentation BUILD file
 ├── myapp                   # Main application
 │   ├── util                # Utility library
 │   │   ├── BUILD.bazel     # Utility library BUILD file
@@ -74,6 +77,12 @@ bazel test //tests/... --test_tag_filters=calculator
 ```bash
 # Lint all the code
 bazel test //myapp/...
+```
+
+```bash
+# Build the documentation
+# The documentation can be found in the bazel-bin/docs directory
+bazel build //docs
 ```
 
 ```bash

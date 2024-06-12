@@ -1,5 +1,5 @@
 load("@doxygen//:doxygen.bzl", "doxygen")
-load("//tools:rules_cc.bzl", "MYAPP_VERSION")
+load("//tools:rules_cc.bzl", "MYAPP_VERSION", "MYAPP_NAME")
 
 doxygen(
     name = "docs",
@@ -14,5 +14,5 @@ doxygen(
         "USE_MDFILE_AS_MAINPAGE = README.md",
     ],
     project_brief = "MyApp is a simple application",
-    project_name = "MyApp",
+    project_name = MYAPP_NAME
 )

@@ -35,7 +35,9 @@ jobs:
         run: bazel build //docs
 
       - name: Create .nojekyll (ensures pages with underscores work on gh pages)
-        run: touch bazel-bin/docs/html/.nojekyll
+        run: |
+          chmod +w bazel-bin/docs/html/
+          touch bazel-bin/docs/html/.nojekyll
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
