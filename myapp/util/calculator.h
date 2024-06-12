@@ -16,7 +16,7 @@ namespace myapp {
 
 class Calculator {
  private:
-  int verbose;
+  int verbose_;
 
  public:
   explicit Calculator(int verbose = 0);

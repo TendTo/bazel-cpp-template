@@ -18,6 +18,8 @@ bazel_dep(name = "fmt", version = "10.2.1")
 bazel_dep(name = "cpplint", version = "1.6.1", dev_dependency = True)
 # C++ test suite by Google
 bazel_dep(name = "googletest", version = "1.14.0", dev_dependency = True)
+# Doxygen documentation generator
+bazel_dep(name = "rules_doxygen", version = "1.1.0", dev_dependency = True)
 
 #################################################################################
 # External dependencies not available in the Bazel registry
@@ -32,3 +34,9 @@ github_archive(
     repository = "gabime/spdlog",
     sha256 = "4dccf2d10f410c1e2feaff89966bfc49a1abb29ef6f08246335b110e001e09a9",
 )
+
+#################################################################################
+# Load module extensions
+#################################################################################
+doxygen_extension = use_extension("@rules_doxygen//:extensions.bzl", "doxygen_extension")
+use_repo(doxygen_extension, "doxygen")

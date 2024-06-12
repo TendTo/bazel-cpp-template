@@ -297,3 +297,38 @@ def myapp_cc_googletest(
         defines = _get_defines(defines),
         **kwargs
     )
+
+def myapp_srcs(name, srcs = None, hdrs = None, deps = [], visibility = ["//visibility:public"]):
+    """Returns three different lists of source files based on the name.
+
+    Args:
+        name: The name of the target. If the name is "srcs", the default "srcs", "hdrs", and "all_srcs" will be used.
+            Otherwise, "srcs_" + name, "hdrs_" + name, and "all_srcs_" + name will be used.
+        srcs: A list of source files include in the filegroup. If None, common c++ source files extensions will be used.
+        hdrs: A list of header files to include in the filegroup. If None, common c++ header files extensions will be used.
+        deps: A list of dependencies. Used for the all_srcs filegroup.
+        visibility: A list of visibility labels to apply to the filegroups.
+    """
+    if name == "srcs":
+        srcs_name, hdrs_name, all_srcs_name = "srcs", "hdrs", "all_srcs"
+    else:
+        srcs_name, hdrs_name, all_srcs_name = "srcs_%s" % name, "hdrs_%s" % name, "all_srcs_%s" % name
+    if srcs == None:
+        srcs = native.glob(["*.cpp", "*.cc", "*.cxx", "*.c"])
+    if hdrs == None:
+        hdrs = native.glob(["*.h", "*.hpp"])
+    native.filegroup(
+        name = srcs_name,
+        srcs = srcs + hdrs,
+        visibility = visibility,
+    )
+    native.filegroup(
+        name = hdrs_name,
+        srcs = hdrs,
+        visibility = visibility,
+    )
+    native.filegroup(
+        name = all_srcs_name,
+        srcs = srcs + hdrs + deps,
+        visibility = visibility,
+    )

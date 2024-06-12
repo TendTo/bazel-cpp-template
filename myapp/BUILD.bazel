@@ -1,5 +1,10 @@
 load("//tools:cpplint.bzl", "cpplint")
-load("//tools:rules_cc.bzl", "MYAPP_NAME", "MYAPP_VERSION", "myapp_cc_binary", "myapp_cc_library")
+load("//tools:rules_cc.bzl", "MYAPP_NAME", "MYAPP_VERSION", "myapp_cc_binary", "myapp_cc_library", "myapp_srcs")
+
+myapp_srcs(
+    name = "srcs",
+    deps = ["//myapp/util:all_srcs"],
+)
 
 genrule(
     name = "generate_version_header",
