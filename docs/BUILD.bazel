@@ -1,5 +1,5 @@
 load("@doxygen//:doxygen.bzl", "doxygen")
-load("//tools:rules_cc.bzl", "MYAPP_VERSION", "MYAPP_NAME")
+load("//tools:rules_cc.bzl", "MYAPP_NAME", "MYAPP_VERSION")
 
 doxygen(
     name = "docs",
@@ -7,12 +7,9 @@ doxygen(
         "//:README.md",
         "//myapp:all_srcs",
     ],
-    configurations = [
-        "INPUT = . myapp myapp/util",
-        "ALIASES = \"licence=@par Licence:^^\"",
-        "PROJECT_NUMBER = %s" % MYAPP_VERSION,
-        "USE_MDFILE_AS_MAINPAGE = README.md",
-    ],
+    aliases = ["\"licence=@par Licence:^^\""],
     project_brief = "MyApp is a simple application",
-    project_name = MYAPP_NAME
+    project_name = MYAPP_NAME,
+    project_number = MYAPP_VERSION,
+    use_mdfile_as_mainpage = "README.md",
 )

@@ -14,19 +14,62 @@
 
 namespace myapp {
 
+/**
+ * @brief Simple calculator class.
+ *
+ * This class provides basic arithmetic operations.
+ */
 class Calculator {
  private:
-  int verbose_;
+  int verbose_;  ///< Verbosity level.
 
  public:
+  /**
+   * @brief Constructor.
+   * @param verbose Verbosity level.
+   */
   explicit Calculator(int verbose = 0);
+  /**
+   * @brief Get the verbosity level.
+   * @return Verbosity level.
+   */
   int getVerbose();
+  /**
+   * @brief Add two numbers.
+   * @tparam T Type of the numbers.
+   * @param a First number.
+   * @param b Second number.
+   * @return Sum of the numbers.
+   */
   template <typename T>
   T add(T a, T b);
+  /**
+   * @brief Subtract two numbers.
+   * @tparam T Type of the numbers.
+   * @param a First number.
+   * @param b Second number.
+   * @return Subtraction of the numbers.
+   */
   template <typename T>
   T subtract(T a, T b);
+  /**
+   * @brief Multiply two numbers.
+   * @tparam T Type of the numbers.
+   * @param a First number.
+   * @param b Second number.
+   * @return Multiplication of the numbers.
+   */
   template <typename T>
   T multiply(T a, T b);
+  /**
+   * @brief Divide two numbers.
+   *
+   * If the second number is zero, it returns 0.
+   * @tparam T Type of the numbers.
+   * @param a First number.
+   * @param b Second number.
+   * @return Division of the numbers.
+   */
   template <typename T>
   T divide(T a, T b);
 };

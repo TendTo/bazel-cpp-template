@@ -11,6 +11,12 @@
 #include "myapp/util/calculator.h"
 #include "myapp/version.h"
 
+/**
+ * @brief Main function.
+ * @param argc Number of arguments.
+ * @param argv Arguments.
+ * @return Execution status.
+ */
 int main(int argc, char **argv) {
   int verbose = 0;
   if (argc > 1) {
