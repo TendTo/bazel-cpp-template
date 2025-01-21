@@ -15,3 +15,11 @@ build:linux --workspace_status_command=tools/workspace_status.sh
 
 build:macos --cxxopt=-std=c++20
 build:macos --workspace_status_command=tools/workspace_status.sh
+
+# Building python bindings
+build:python --compilation_mode=opt
+build:python --enable_static_build
+build:python --enable_python_build
+
+# Dependency clean
+build:dwyu --aspects=//tools:dwyu.bzl%dwyu --output_groups=dwyu

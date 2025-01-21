@@ -3,10 +3,37 @@ This makes it easy to change the build configuration for all C++ rules in the pr
 Inspired by Drake's drake.bzl file https://github.com/RobotLocomotion/drake/blob/master/tools/drake.bzl.
 """
 
+load("@pybind11_bazel//:build_defs.bzl", "pybind_extension", "pybind_library")
 load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library", "cc_test")
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
+# Warning: The following comment is used to extract metadata from this file. Do not remove it.
+# GLOBAL VARIABLES
 MYAPP_NAME = "myapp"
 MYAPP_VERSION = "0.0.1"
+MYAPP_AUTHOR = "Ernesto Casablanca"
+MYAPP_AUTHOR_EMAIL = "casablancaernesto@gmail.com"
+MYAPP_DESCRIPTION = "Myapp description"
+MYAPP_HOMEPAGE = "https://github.com/TendTo/bazel-cpp-template"
+MYAPP_SOURCE = "https://github.com/TendTo/bazel-cpp-template"
+MYAPP_TRACKER = "https://github.com/TendTo/bazel-cpp-template/issues"
+MYAPP_LICENSE = "Apache-2.0"
+# END GLOBAL VARIABLES
+
+# Can't parse the list
+MYAPP_CLASSIFIERS = [
+    "Development Status :: 1 - Planning",
+    "License :: OSI Approved :: BSD License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 
 # The CXX_FLAGS will be enabled for all C++ rules in the project
 # building with any linux compiler.
@@ -85,10 +112,10 @@ def _get_copts(rule_copts, cc_test = False):
         A list of copts.
     """
     return select({
-        "//tools:gcc_build": GCC_FLAGS + GCC_TEST_FLAGS if cc_test else [] + rule_copts,
-        "//tools:clang_build": CLANG_FLAGS + CLANG_CL_TEST_FLAGS if cc_test else [] + rule_copts,
-        "//tools:msvc_cl_build": MSVC_CL_FLAGS + MSVC_CL_TEST_FLAGS if cc_test else [] + rule_copts,
-        "//tools:clang_cl_build": CLANG_CL_FLAGS + CLANG_CL_TEST_FLAGS if cc_test else [] + rule_copts,
+        "//tools:gcc_build": GCC_FLAGS + (GCC_TEST_FLAGS if cc_test else []) + rule_copts,
+        "//tools:clang_build": CLANG_FLAGS + (CLANG_CL_TEST_FLAGS if cc_test else []) + rule_copts,
+        "//tools:msvc_cl_build": MSVC_CL_FLAGS + (MSVC_CL_TEST_FLAGS if cc_test else []) + rule_copts,
+        "//tools:clang_cl_build": CLANG_CL_FLAGS + (CLANG_CL_TEST_FLAGS if cc_test else []) + rule_copts,
         "//conditions:default": CXX_FLAGS + rule_copts,
     })
 
@@ -105,7 +132,7 @@ def _get_defines(rule_defines):
         "//tools:debug_build": [],
         "//conditions:default": [],
     }) + select({
-        "//tools:release_build": ["NDEBUG", "NLOG"],
+        "//tools:python_build": ["MYAPP_PYTHON"],
         "//conditions:default": [],
     })
 
@@ -222,9 +249,9 @@ def myapp_cc_test(
     Note that for almost all cases, myapp_cc_googletest should be used instead of this rule.
 
     By default, sets size="small" because that indicates a unit test.
-    If a list of srcs is not provided, it will be inferred from the name by appending .cpp.
-    For example, smats_cc_test(name = "test_foo_bar") will look for test_foo_bar.cpp.
-    Furthermore, the name of the test will also be added as a tag.
+    If a list of srcs is not provided, it will be inferred from the name, by capitalizing each _-separated word and appending .cpp.
+    For example, myapp_cc_test(name = "test_foo_bar") will look for TestFooBar.cpp.
+    Furthermore, a tag will be added for the test, based on the name, by converting the name to lowercase and removing the "test_" prefix.
 
     Args:
         name: The name of the test.
@@ -235,13 +262,13 @@ def myapp_cc_test(
         **kwargs: Additional arguments to pass to cc_test.
     """
     if srcs == None:
-        srcs = ["%s.cpp" % name]
+        srcs = ["".join([word.capitalize() for word in name.split("_")]) + ".cpp"]
     cc_test(
         name = name,
         srcs = srcs,
         copts = _get_copts(copts, cc_test = True),
         linkstatic = True,
-        tags = tags + ["smats", name],
+        tags = tags + ["myapp", "".join([word.lower() for word in name.split("_")][1:])],
         defines = _get_defines(defines),
         **kwargs
     )
@@ -263,9 +290,9 @@ def myapp_cc_googletest(
     By default, it uses size="small" because that indicates a unit test.
     By default, it uses use_default_main=True to use GTest's main, via @googletest//:gtest_main.
     If use_default_main is False, it will depend on @googletest//:gtest instead.
-    If a list of srcs is not provided, it will be inferred from the name by appending .cpp.
-    For example, smats_cc_test(name = "test_foo_bar") will look for test_foo_bar.cpp.
-    Furthermore, the name of the test will also be added as a tag.
+    If a list of srcs is not provided, it will be inferred from the name, by capitalizing each _-separated word and appending .cpp.
+    For example, myapp_cc_test(name = "test_foo_bar") will look for TestFooBar.cpp.
+    Furthermore, a tag will be added for the test, based on the name, by converting the name to lowercase and removing the "test_" prefix.
 
     Args:
         name: The name of the test.
@@ -298,7 +325,7 @@ def myapp_cc_googletest(
         **kwargs
     )
 
-def myapp_srcs(name, srcs = None, hdrs = None, deps = [], visibility = ["//visibility:public"]):
+def myapp_srcs(name, srcs = None, hdrs = None, deps = [], subfolder = "", visibility = ["//visibility:public"]):
     """Returns three different lists of source files based on the name.
 
     Args:
@@ -314,21 +341,100 @@ def myapp_srcs(name, srcs = None, hdrs = None, deps = [], visibility = ["//visib
     else:
         srcs_name, hdrs_name, all_srcs_name = "srcs_%s" % name, "hdrs_%s" % name, "all_srcs_%s" % name
     if srcs == None:
-        srcs = native.glob(["*.cpp", "*.cc", "*.cxx", "*.c"])
+        srcs = native.glob(["*.cpp", "*.cc", "*.cxx", "*.c"], allow_empty = True)
     if hdrs == None:
-        hdrs = native.glob(["*.h", "*.hpp"])
+        hdrs = native.glob(["*.h", "*.hpp"], allow_empty = True)
     native.filegroup(
         name = srcs_name,
         srcs = srcs + hdrs,
+        tags = ["no-cpplint"],
         visibility = visibility,
     )
     native.filegroup(
         name = hdrs_name,
         srcs = hdrs,
+        tags = ["no-cpplint"],
         visibility = visibility,
     )
     native.filegroup(
         name = all_srcs_name,
         srcs = srcs + hdrs + deps,
         visibility = visibility,
+    )
+
+def myapp_hdrs_tar(name, hdrs = None, deps = [], subfolder = "", visibility = ["//visibility:public"]):
+    """Returns three different lists of source files based on the name.
+
+    Args:
+        name: The name of the target. If the name is "srcs", the default "srcs", "hdrs", and "all_srcs" will be used.
+            Otherwise, "srcs_" + name, "hdrs_" + name, and "all_srcs_" + name will be used.
+        srcs: A list of source files include in the filegroup. If None, common c++ source files extensions will be used.
+        hdrs: A list of header files to include in the filegroup. If None, common c++ header files extensions will be used.
+        deps: A list of dependencies. Used for the all_srcs filegroup.
+        visibility: A list of visibility labels to apply to the filegroups.
+    """
+    if hdrs == None:
+        hdrs = native.glob(["*.h", "*.hpp"])
+    pkg_tar(
+        name = name,
+        srcs = hdrs,
+        extension = "tar.gz",
+        package_dir = subfolder,
+        deps = deps,
+        visibility = visibility,
+    )
+
+def myapp_pyblind_library(
+        name,
+        srcs = None,
+        deps = [],
+        copts = [],
+        linkstatic = None,
+        defines = [],
+        features = [],
+        **kwargs):
+    """Creates a rule to declare a pybind11 library.
+
+    Args:
+        name: The name of the library.
+        srcs: A list of source files to compile.
+        deps: A list of dependencies.
+        copts: A list of compiler options.
+        linkstatic: Whether to link statically.
+        defines: A list of defines to add to the library.
+        features: A list of features to add to the library.
+        **kwargs: Additional arguments to pass to pybind_library.
+    """
+    print(_get_copts(copts))
+    pybind_library(
+        name = name,
+        srcs = srcs,
+        deps = deps,
+        copts = _get_copts(copts),
+        linkstatic = _get_static(linkstatic),
+        defines = _get_defines(defines),
+        **kwargs
+    )
+
+def myapp_pybind_extension(name, srcs, deps = [], copts = [], linkstatic = None, defines = [], features = [], **kwargs):
+    """Creates a rule to declare a pybind11 extension.
+
+    Args:
+        name: The name of the extension.
+        srcs: A list of source files to compile.
+        deps: A list of dependencies.
+        copts: A list of compiler options.
+        linkstatic: Whether to link statically.
+        defines: A list of defines to add to the extension.
+        features: A list of features to add to the extension.
+        **kwargs: Additional arguments to pass to pybind_extension.
+    """
+    pybind_extension(
+        name = name,
+        srcs = srcs,
+        deps = deps,
+        copts = _get_copts(copts),
+        linkstatic = _get_static(linkstatic),
+        defines = _get_defines(defines),
+        **kwargs
     )
