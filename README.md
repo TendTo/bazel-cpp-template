@@ -91,6 +91,11 @@ bazel clean
 ```
 
 ```bash
+# Run the depend-what-you-use (DWYU) analysis on the main application
+bazel build //myapp --config=dwyu
+```
+
+```bash
 # Get some information about the cpp toolchain as bazel sees it
 bazel cquery "@bazel_tools//tools/cpp:compiler" --output starlark --starlark:expr 'providers(target)'
 ```
