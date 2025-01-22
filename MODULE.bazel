@@ -10,6 +10,8 @@ module(name = "myapp")
 bazel_dep(name = "rules_cc", version = "0.1.0")
 # Utility rules for Bazel
 bazel_dep(name = "bazel_skylib", version = "1.7.1")
+# Bazel rules for detecting the platform
+bazel_dep(name = "platforms", version = "0.0.11")
 # argparse implementation for modern C++
 bazel_dep(name = "argparse", version = "3.0.0")
 # C++ library for formatting strings

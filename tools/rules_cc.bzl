@@ -405,7 +405,6 @@ def myapp_pyblind_library(
         features: A list of features to add to the library.
         **kwargs: Additional arguments to pass to pybind_library.
     """
-    print(_get_copts(copts))
     pybind_library(
         name = name,
         srcs = srcs,

@@ -4,6 +4,7 @@ load("//tools:rules_cc.bzl", "myapp_cc_library", "myapp_srcs")
 package(default_visibility = [
     "//myapp:__subpackages__",
     "//tests:__subpackages__",
+    "//pymyapp:__subpackages__",
 ])
 
 myapp_srcs(name = "srcs")

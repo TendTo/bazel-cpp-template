@@ -6,6 +6,7 @@
 
 NAME=${1:-unknown} # read name of the software from command line argument or use default 'unknown'
 VERSION=${2:-unknown.unknown.unknown} # read version from command line argument or use default 'unknown.unknown.unknown'
+DESCRIPTION="${3:-description}" # read description from command line argument or use default 'description'
 IFS='.' read -r -a VERSION_ARRAY <<< "$VERSION" # split string into an array on '.' delimiter
 MAJOR=${VERSION_ARRAY[0]} # get major version
 MINOR=${VERSION_ARRAY[1]} # get minor version
@@ -23,5 +24,6 @@ cat <<EOF
 #define MYAPP_VERSION_MINOR    ${MINOR}
 #define MYAPP_VERSION_REVISION ${REVISION}
 #define MYAPP_VERSION_REPOSTAT "${REPOSITORY_STATUS}"
+#define MYAPP_DESCRIPTION      "${DESCRIPTION}"
 
 EOF

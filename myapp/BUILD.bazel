@@ -21,6 +21,7 @@ genrule(
 myapp_cc_library(
     name = "version",
     hdrs = [":generate_version_header"],
+    visibility = ["//visibility:public"],
 )
 
 myapp_cc_binary(

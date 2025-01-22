@@ -1,0 +1,114 @@
+load("@pypi//:requirements.bzl", "requirement")
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@rules_python//python:packaging.bzl", "py_wheel")
+load("//tools:rules_cc.bzl", "MYAPP_AUTHOR", "MYAPP_AUTHOR_EMAIL", "MYAPP_CLASSIFIERS", "MYAPP_DESCRIPTION", "MYAPP_HOMEPAGE", "MYAPP_LICENSE", "MYAPP_SOURCE", "MYAPP_TRACKER", "MYAPP_VERSION", "myapp_pybind_extension", "myapp_pyblind_library")
+
+myapp_pyblind_library(
+    name = "interrupt",
+    srcs = ["interrupt.cpp"],
+    hdrs = ["interrupt.h"],
+    visibility = ["//myapp:__subpackages__"],
+)
+
+myapp_pybind_extension(
+    name = "_pymyapp",
+    srcs = [
+        "pymyapp.cpp",
+    ],
+    linkstatic = select({
+        "//tools:static_build": True,
+        "//conditions:default": False,
+    }),
+    deps = [
+        "//myapp:version",
+        "//myapp/util:calculator",
+    ],
+)
+
+py_library(
+    name = "pymyapp_lib",
+    srcs = [
+        "__init__.py",
+        "__main__.py",
+    ],
+    data = [":_pymyapp.so"],
+    imports = ["."],
+    srcs_version = "PY3",
+)
+
+py_binary(
+    name = "pymyapp",
+    srcs = ["__main__.py"],
+    imports = ["."],
+    main = "__main__.py",
+    python_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":pymyapp_lib",
+    ],
+)
+
+py_binary(
+    name = "stubgen_bin",
+    srcs = ["_stubgen.py"],
+    imports = ["."],
+    main = "_stubgen.py",
+    python_version = "PY3",
+    deps = [
+        requirement("pybind11_stubgen"),
+        ":pymyapp_lib",
+    ],
+)
+
+genrule(
+    name = "stubgen",
+    outs = [
+        "_pymyapp.pyi",
+        "__init__.pyi",
+        "py.typed",
+    ],
+    cmd = "$(location :stubgen_bin) $(OUTS)",
+    tools = [":stubgen_bin"],
+)
+
+filegroup(
+    name = "pymyapp_files",
+    srcs = [
+        ":_pymyapp",
+        ":pymyapp_lib",
+        ":stubgen",
+    ],
+)
+
+py_wheel(
+    name = "pymyapp_wheel",
+    abi = "$(PYTHON_ABI_TAG)",
+    author = MYAPP_AUTHOR,
+    author_email = MYAPP_AUTHOR_EMAIL,
+    classifiers = MYAPP_CLASSIFIERS,
+    description_content_type = "text/markdown",
+    description_file = "//:README.md",
+    distribution = "pymyapp",
+    entry_points = {
+        "console_scripts": ["pymyapp = pymyapp.__main__:main"],
+    },
+    homepage = MYAPP_HOMEPAGE,
+    license = MYAPP_LICENSE,
+    platform = select({
+        "@bazel_tools//src/conditions:windows_x64": "win_amd64",
+        "@bazel_tools//src/conditions:windows_arm64": "win_arm64",
+        "@bazel_tools//src/conditions:darwin_x86_64": "macosx_12_0_x86_64",
+        "@bazel_tools//src/conditions:darwin_arm64": "macosx_12_0_arm64",
+        "@bazel_tools//src/conditions:linux_x86_64": "manylinux_2_34_x86_64",
+        "@bazel_tools//src/conditions:linux_aarch64": "manylinux_2_34_aarch64",
+    }),
+    project_urls = {
+        "Source": MYAPP_SOURCE,
+        "Tracker": MYAPP_TRACKER,
+    },
+    python_tag = "$(PYTHON_TAG)",
+    summary = MYAPP_DESCRIPTION,
+    toolchains = ["//tools:make_var_substitution"],
+    version = MYAPP_VERSION,
+    deps = [":pymyapp_files"],
+)

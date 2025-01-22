@@ -5,6 +5,7 @@ build --experimental_cc_shared_library
 # Flag aliases
 build --flag_alias=enable_static_build=//tools:enable_static_build
 build --flag_alias=enable_dynamic_build=//tools:enable_dynamic_build
+build --flag_alias=enable_python_build=//tools:enable_python_build
 
 # Default build
 build:windows --cxxopt=/std:c++20
