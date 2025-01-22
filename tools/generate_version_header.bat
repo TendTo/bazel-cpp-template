@@ -21,7 +21,6 @@ for /f "tokens=1,2,3 delims=." %%a in ("%VERSION%") do (
 )
 
 REM Get repository status from bazel-out/stable-status.txt
-echo 
 for /f "tokens=2*" %%a in ('findstr /b /c:"STABLE_REPOSITORY_STATUS " bazel-out\stable-status.txt') do set "REPOSITORY_STATUS=%%a %%b"
 
 REM Print version header
