@@ -9,7 +9,7 @@ build --flag_alias=enable_dynamic_build=//tools:enable_dynamic_build
 build --flag_alias=enable_python_build=//tools:enable_python_build
 
 # Default build
-build:windows --cxxopt=/std:c++20
+build:windows --cxxopt=/std:c++20 --cxxopt=/utf-8
 build:windows --workspace_status_command=tools/workspace_status.bat
 
 build:linux --cxxopt=-std=c++20
