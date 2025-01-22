@@ -1,6 +1,7 @@
 # Workspace status command
 build --enable_platform_specific_config
 build --experimental_cc_shared_library
+build --@spdlog//:header_only=False
 
 # Flag aliases
 build --flag_alias=enable_static_build=//tools:enable_static_build

@@ -15,7 +15,9 @@ bazel_dep(name = "platforms", version = "0.0.11")
 # argparse implementation for modern C++
 bazel_dep(name = "argparse", version = "3.0.0")
 # C++ library for formatting strings
-bazel_dep(name = "fmt", version = "11.1.2")
+bazel_dep(name = "fmt", version = "10.2.1")
+# C++ library for logging
+bazel_dep(name = "spdlog", version = "1.15.0.bcr.4")
 # rules_python for building python targets
 bazel_dep(name = "rules_python", version = "1.1.0")
 # pybind11 for binding C++ and Python
@@ -30,20 +32,6 @@ bazel_dep(name = "googletest", version = "1.15.2", dev_dependency = True)
 bazel_dep(name = "rules_doxygen", version = "2.1.0", dev_dependency = True)
 # MIT | rules for dealing with target dependencies
 bazel_dep(name = "depend_on_what_you_use", version = "0.6.0", dev_dependency = True)
-
-#################################################################################
-# External dependencies not available in the Bazel registry
-#################################################################################
-github_archive = use_repo_rule("//tools:git_archive.bzl", "github_archive")
-
-# Logging library
-github_archive(
-    name = "spdlog",
-    build_file = "//third_party:spdlog.BUILD.bazel",  # custom build file
-    commit = "v1.15.0",
-    repository = "gabime/spdlog",
-    sha256 = "9962648c9b4f1a7bbc76fd8d9172555bad1871fdb14ff4f842ef87949682caa5",
-)
 
 #################################################################################
 # Load module extensions

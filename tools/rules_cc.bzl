@@ -262,7 +262,7 @@ def myapp_cc_test(
         **kwargs: Additional arguments to pass to cc_test.
     """
     if srcs == None:
-        srcs = ["".join([word.capitalize() for word in name.split("_")]) + ".cpp"]
+        srcs = [name + ".cpp"]
     cc_test(
         name = name,
         srcs = srcs,
