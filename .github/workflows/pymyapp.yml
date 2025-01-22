@@ -40,7 +40,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          for py_version in 3.8 3.9 3.10 3.11 3.12, 3.13; do
+          for py_version in 3.8 3.9 3.10 3.11 3.12 3.13; do
             bazel test --config=python --python_version=$py_version //pymyapp/tests/...
           done
 
@@ -80,7 +80,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p dist
-          for py_version in 3.8 3.9 3.10 3.11 3.12, 3.13; do
+          for py_version in 3.8 3.9 3.10 3.11 3.12 3.13; do
             bazel build --config=python --python_version=$py_version //pymyapp:pymyapp_wheel
             cp $(bazel cquery --output=files --config=python --python_version=$py_version //pymyapp:pymyapp_wheel) dist/
           done
