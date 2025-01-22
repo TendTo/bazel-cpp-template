@@ -56,11 +56,15 @@ python.toolchain(
 python.toolchain(
     python_version = "3.12",
 )
+python.toolchain(
+    python_version = "3.13",
+)
 use_repo(
     python,
     "python_3_10",
     "python_3_11",
     "python_3_12",
+    "python_3_13",
     "python_3_8",
     "python_3_9",
     "python_versions",
@@ -90,6 +94,11 @@ pip.parse(
 pip.parse(
     hub_name = "pypi",
     python_version = "3.12",
+    requirements_lock = "//tools:requirements.txt",
+)
+pip.parse(
+    hub_name = "pypi",
+    python_version = "3.13",
     requirements_lock = "//tools:requirements.txt",
 )
 use_repo(pip, "pypi")
