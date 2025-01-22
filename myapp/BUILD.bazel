@@ -1,5 +1,5 @@
 load("//tools:cpplint.bzl", "cpplint")
-load("//tools:rules_cc.bzl", "MYAPP_NAME", "MYAPP_VERSION", "myapp_cc_binary", "myapp_cc_library", "myapp_srcs")
+load("//tools:rules_cc.bzl", "MYAPP_NAME", "MYAPP_VERSION", "MYAPP_DESCRIPTION", "myapp_cc_binary", "myapp_cc_library", "myapp_srcs")
 
 myapp_srcs(
     name = "srcs",
@@ -9,8 +9,8 @@ myapp_srcs(
 genrule(
     name = "generate_version_header",
     outs = ["version.h"],
-    cmd = "$(location //tools:generate_version_header) %s %s > $@" % (MYAPP_NAME, MYAPP_VERSION),
-    cmd_bat = "$(location //tools:generate_version_header.bat) %s %s $@" % (MYAPP_NAME, MYAPP_VERSION),
+    cmd = "$(location //tools:generate_version_header) %s %s '%s' > $@" % (MYAPP_NAME, MYAPP_VERSION, MYAPP_DESCRIPTION),
+    cmd_bat = "$(location //tools:generate_version_header.bat) %s %s '%s' $@" % (MYAPP_NAME, MYAPP_VERSION, MYAPP_DESCRIPTION),
     stamp = True,
     tools = [
         "//tools:generate_version_header",
