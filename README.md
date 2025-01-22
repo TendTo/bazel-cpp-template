@@ -106,6 +106,22 @@ bazel cquery "@bazel_tools//tools/cpp:compiler" --output starlark --starlark:exp
 bazel query --noimplicit_deps --notool_deps 'deps(//myapp)'
 ```
 
+```bash
+# Build the wheel for the python bindings
+# The wheel can be found in the bazel-bin/pymyapp directory
+bazel build --config=python --python_version=3.13 //pymyapp:pymyapp_wheel
+```
+
+```bash
+# Run the python bindings tests
+bazel test --config=python --python_version=3.13 //pymyapp/tests/...
+```
+
+```bash
+# Run the python bindings main application
+bazel run //pymyapp --config=python --python_version=3.13
+```
+
 ## Troubleshooting
 
 ### Bazel server stuck
