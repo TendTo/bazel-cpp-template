@@ -1,0 +1,3 @@
+load("//tools:rules_python.bzl", "pymyapp_py_test")
+
+pymyapp_py_test(name = "test_calculator")

@@ -1,0 +1,17 @@
+load("//tools:cpplint.bzl", "cpplint")
+load("//tools:rules_cc.bzl", "myapp_cc_library")
+
+package(default_visibility = [
+    "//bindings/pymyapp:__subpackages__",
+    "//myapp:__subpackages__",
+    "//tests:__subpackages__",
+])
+
+myapp_cc_library(
+    name = "calculator",
+    srcs = ["calculator.cpp"],
+    hdrs = ["calculator.h"],
+    deps = ["@spdlog"],
+)
+
+cpplint()

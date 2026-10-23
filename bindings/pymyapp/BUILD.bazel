@@ -1,0 +1,78 @@
+load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("//tools:rules_python.bzl", "myapp_py_stubgen")
+load("//tools:rules_cc.bzl", "myapp_cc_py_extension", "myapp_cc_py_library")
+
+package(default_visibility = [
+    "//bindings/pymyapp:__subpackages__",
+    "//myapp:__subpackages__",
+    "//tests:__subpackages__",
+])
+
+myapp_cc_py_library(
+    name = "interrupt",
+    srcs = ["interrupt.cpp"],
+    hdrs = ["interrupt.h"],
+    visibility = ["//myapp:__subpackages__"],
+)
+
+myapp_cc_py_library(
+    name = "_pymyapp_cpp",
+    srcs = [
+        "pymyapp.cpp",
+    ],
+    linkstatic = select({
+        "//tools:static_build": True,
+        "//conditions:default": False,
+    }),
+    deps = [
+        "//myapp:version",
+        "//myapp/util:calculator",
+    ],
+)
+
+myapp_cc_py_extension(
+    name = "_pymyapp",
+    deps = [":_pymyapp_cpp"],
+)
+
+py_library(
+    name = "pymyapp_lib",
+    srcs = [
+        "__init__.py",
+        "__main__.py",
+    ],
+    data = [
+        ":_pymyapp",
+        ":_pymyapp_stub",
+    ],
+    imports = [".."],
+    srcs_version = "PY3",
+)
+
+myapp_py_stubgen(
+    name = "_pymyapp_stub",
+    imports = ["."],
+    marker_file = "py.typed",
+    module = ":_pymyapp",
+)
+
+py_binary(
+    name = "pymyapp",
+    srcs = ["__main__.py"],
+    imports = [".."],
+    main = "__main__.py",
+    python_version = "PY3",
+    visibility = ["//visibility:public"],
+    deps = [
+        ":pymyapp_lib",
+    ],
+)
+
+filegroup(
+    name = "pymyapp_files",
+    srcs = [
+        ":_pymyapp",
+        ":_pymyapp_stub",
+        ":pymyapp_lib",
+    ],
+)
